@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Live Facebook Reaction Poll</title>
+    <style>
+        /* CSS Styling */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .poll-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #333;
+            border-radius: 10px;
+        }
+
+        .poll {
+            display: flex;
+            justify-content: space-around;
+            padding: 20px 0;
+        }
+
+        .option {
+            width: 150px;
+            text-align: center;
+        }
+
+        img {
+            width: 100px;
+            height: auto;
+        }
+
+        .reaction {
+            margin-top: 10px;
+        }
+
+        .reaction-icon {
+            font-size: 30px;
+        }
+
+        .count {
+            display: block;
+            font-size: 24px;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="poll-container">
+        <h1>SAMSUNG VS APPLE VS LG</h1>
+        <div class="poll">
+            <div class="option" id="samsung">
+                <img src="samsung_logo.png" alt="Samsung">
+                <div class="reaction">
+                    <span class="reaction-icon">👍</span>
+                    <span class="count" id="samsung-count">0</span>
+                </div>
+            </div>
+            <div class="option" id="apple">
+                <img src="apple_logo.png" alt="Apple">
+                <div class="reaction">
+                    <span class="reaction-icon">❤️</span>
+                    <span class="count" id="apple-count">0</span>
+                </div>
+            </div>
+            <div class="option" id="lg">
+                <img src="lg_logo.png" alt="LG">
+                <div class="reaction">
+                    <span class="reaction-icon">😆</span>
+                    <span class="count" id="lg-count">0</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript for Fetching Reactions
+        const ACCESS_TOKEN = 'EAAGDbBh1DdYBOwZBdHLN5eid4MA73GBB8o5k1i94JTxwMaJeuXZAZB12t7Y4YEVELDfRWhfMaZAIIyiwu9ZAnsu2blCZAZAho6EL6P1cP3UafZB70WzS4wyzvbcr2oaK9jz4MCaStmP5FV8IoTCvwPZBgCDW4tGGwRDDtLGkatQiqjO9poJYBH2ieThjmkf1wzwBQMaIdSVKgDyfxWtH9ZC8oQn9IZD'; // Replace with your access token
+        const LIVE_VIDEO_ID = '1759743698169328'; // Replace with your live video ID
+
+        // Poll Facebook's Graph API every 5 seconds for new reaction counts
+        setInterval(fetchReactions, 5000);
+
+        // Function to fetch reactions from Facebook's Graph API
+        async function fetchReactions() {
+            try {
+                const response = await fetch(`https://graph.facebook.com/v12.0/${LIVE_VIDEO_ID}/insights?metric=post_reactions_like_total,post_reactions_love_total,post_reactions_haha_total&access_token=${ACCESS_TOKEN}`);
+                const data = await response.json();
+
+                // Get reaction counts for each type
+                const likeCount = data.data.find(metric => metric.name === 'post_reactions_like_total').values[0].value;
+                const loveCount = data.data.find(metric => metric.name === 'post_reactions_love_total').values[0].value;
+                const hahaCount = data.data.find(metric => metric.name === 'post_reactions_haha_total').values[0].value;
+
+                // Update counts in HTML
+                document.getElementById('samsung-count').textContent = likeCount;
+                document.getElementById('apple-count').textContent = loveCount;
+                document.getElementById('lg-count').textContent = hahaCount;
+
+            } catch (error) {
+                console.error('Error fetching reaction data:', error);
+            }
+        }
+    </script>
+</body>
+</html>
